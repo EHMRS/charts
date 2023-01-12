@@ -1,0 +1,13 @@
+apiVersion: v2
+name: mimic
+description: Mimic display from East Herts Miniature Railway
+type: application
+version: 2.0.1
+appVersion: "2.0.1"
+
+home: https://github.com/EHMRS/charts/mimic
+sources:
+  - https://github.com/EHMRS/mimic
+maintainers:
+  - name: Richard Franks
+    email: richard.franks@ehmr.org.uk

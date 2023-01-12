@@ -1,0 +1,42 @@
+{{- if .Values.ingress.enabled -}}
+{{- $fullName := include "mimic.fullname" . -}}
+{{- if semverCompare ">=1.19-0" .Capabilities.KubeVersion.GitVersion -}}
+apiVersion: networking.k8s.io/v1
+{{- else -}}
+apiVersion: networking.k8s.io/v1beta1
+{{- end }}
+kind: Ingress
+metadata:
+  name: {{ $fullName }}
+  labels:
+{{ include "mimic.labels" . | indent 4 }}
+  {{- with .Values.ingress.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+{{- if .Values.ingress.tls }}
+  tls:
+    - hosts:
+        - {{ .Values.fqdn | quote }}
+      secretName: {{ .Values.fqdn }}-tls
+{{- end }}
+  rules:
+    - host: {{ .Values.fqdn | quote }}
+      http:
+        paths:
+          - path: /
+            pathType: "ImplementationSpecific"
+            backend:
+              service:
+                name: {{ include "mimic.fullname" . }}-frontend
+                port:
+                  name: http
+          - path: /websocket
+            pathType: "ImplementationSpecific"
+            backend:
+              service:
+                name: {{ include "mimic.fullname" . }}-backend
+                port:
+                  name: http
+{{- end }}
